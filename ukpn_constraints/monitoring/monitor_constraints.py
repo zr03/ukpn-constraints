@@ -47,6 +47,16 @@ def update_graph(df, lines, num_constraints_to_plot, max_plot_history):
     """
     Updates a graph with the given data.
 
+    This function is designed to be called repeatedly to update an interactive matplotlib plot.
+
+    Each time the function is called, it will do the following:
+
+    1. Iterate through the top X constraints in the as specified by num_constraints_to_plot, from highest utilisation to lowest.
+    2. For each constraint, it will determine if the constraint has already been plotted.
+        a. If the constraint has already been plotted, it will update the existing line data for that constraint.
+        b. If the constraint has not been plotted yet, it will create a new line for that constraint.
+       This process results in constraints which were previously plotted but no longer in the top 10 being removed from the plot.
+
     Parameters:
     df (pandas.DataFrame): DataFrame containing the data to plot. Must include 'timestamp', 'constraint_description', and 'utilisation' columns.
     lines (list): List of line objects representing the current lines on the plot.

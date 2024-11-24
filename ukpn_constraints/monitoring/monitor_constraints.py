@@ -183,41 +183,42 @@ def clean_data_and_add_utilisation(df):
     df['utilisation'] = df['present_amps_value'] / df['trim_amps']
     return df
 
-def hit_api_and_return_data(api_base_url, api_key, der_name=None, limit_per_call=100):
+def hit_api_and_return_data(api_base_url, api_key, der_name=None, n_records=500, limit_per_call=100):
     """
-    Fetches data from the API for a particular DER.
+    Fetch data from an API and return it as a pandas DataFrame.
 
-    Parameters
-    ----------
-    api_base_url : str
-        The base URL for the API endpoint.
-    api_key : str
-        The API key for UKPN's ODP.
-    der_name : str, optional
-        The DER name present on UKPN's ODP. If not provided, defaults to pulling all constraints across the network.
-    limit_per_call : int, optional
-        The maximum number of records to fetch per API call. Defaults to 100 which is the maximum permitted by ODP.
-
-    Returns
-    -------
-    pandas.DataFrame
-        DataFrame containing the fetched data with columns: 'timestamp', 'constraint_id', 'present_amps_value', 'trim_amps', 'release_limit_amps', 'breach_flag', 'constraint_description', 'der_name'.
-        Returns an empty DataFrame if there is an error or no data is returned.
+    Parameters:
+    api_base_url (str): The base URL of the API endpoint.
+    api_key (str): The API key for authentication.
+    der_name (str, optional): The DER name to filter the constraints. Defaults to pulling all constraints if not provided.
+    n_records (int, optional): The maximum number of records to fetch. Defaults to 500.
+    limit_per_call (int, optional): The number of records to fetch per API call. Defaults to 100, the maximum allowable by ODP.
+    Returns:
+    pd.DataFrame: A concatenated DataFrame containing the fetched data.
     """
     if not der_name:
         der_name = "REDACTED" # This will pull all constraints across the network
 
-    params = {'apikey': api_key,'refine':f'der_name:{der_name}', 'limit': limit_per_call}
-    resp = requests.get(api_base_url, params=params)
-    data = resp.json()
-    # Create DataFrame from data (handle potential errors)
-    try:
-        df = pd.DataFrame(data["results"],columns=['timestamp', 'constraint_id','present_amps_value','trim_amps','release_limit_amps','breach_flag','constraint_description','der_name'])
-    except Exception as e:
-        print(f"Error creating DataFrame, no results in response: {e}")
-        df = pd.DataFrame()
+    n_pages = n_records // limit_per_call + 1
+    resps = []
+    for i in range(n_pages):
+        params = {'apikey': api_key,'refine':f'der_name:{der_name}', 'limit': limit_per_call, 'offset': i*limit_per_call}
+        resp = requests.get(api_base_url, params=params)
+        resps.append(resp)
 
-    return df
+    dfs = []
+    for resp in resps:
+        data = resp.json()
+        # Create DataFrame from data (handle potential errors)
+        try:
+            df = pd.DataFrame(data["results"],columns=['timestamp', 'constraint_id','present_amps_value','trim_amps','release_limit_amps','breach_flag','constraint_description','der_name'])
+        except Exception as e:
+            print(f"Error creating DataFrame, no results in response: {e}")
+            df = pd.DataFrame()
+        dfs.append(df)
+
+    df_all = pd.concat(dfs, ignore_index=True)
+    return df_all
 
 def main():
     """

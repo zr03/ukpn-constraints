@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ukpn-constraints"
+version = "0.0.1"
+description = "This package contains functionality to scrape and analyse network constraint data using UK Power Networks Open Data Portal"
+authors = [
+    "Zahin Rahim <zahin.rahim@ukpowernetworks.co.uk>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "*"
+numpy = "^2.0"
+pandas = "2.2.2"
+matplotlib = "^3.9.0"
+plotly="^5.18.0"
+requests = "*"
+python-dotenv = "^1.0.0"
+ipywidgets = "^8.0.0"
+wxPython = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

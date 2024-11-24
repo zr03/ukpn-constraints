@@ -203,7 +203,15 @@ def hit_api_and_return_data(api_base_url, api_key, der_name=None, limit_per_call
     pandas.DataFrame
         DataFrame containing the fetched data with columns: 'timestamp', 'constraint_id', 'present_amps_value', 'trim_amps', 'release_limit_amps', 'breach_flag', 'constraint_description', 'der_name'.
         Returns an empty DataFrame if there is an error or no data is returned.
+
+    Raises
+    ------
+    Exception
+        If the API key is not provided.
     """
+    if not api_key:
+        raise Exception("API key is required to fetch data from the API.")
+
     if not der_name:
         der_name = "REDACTED" # This will pull all constraints across the network
 

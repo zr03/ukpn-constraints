@@ -183,7 +183,7 @@ def clean_data_and_add_utilisation(df):
     df['utilisation'] = df['present_amps_value'] / df['trim_amps']
     return df
 
-def hit_api_and_return_data(api_base_url, api_key, der_name=None, limit_per_call=100):
+def hit_api_and_return_data(api_base_url, api_key, der_name=None):
     """
     Fetches data from the API for a particular DER.
 
@@ -195,8 +195,6 @@ def hit_api_and_return_data(api_base_url, api_key, der_name=None, limit_per_call
         The API key for UKPN's ODP.
     der_name : str, optional
         The DER name present on UKPN's ODP. If not provided, defaults to pulling all constraints across the network.
-    limit_per_call : int, optional
-        The maximum number of records to fetch per API call. Defaults to 100 which is the maximum permitted by ODP.
 
     Returns
     -------
@@ -215,7 +213,7 @@ def hit_api_and_return_data(api_base_url, api_key, der_name=None, limit_per_call
     if not der_name:
         der_name = "REDACTED" # This will pull all constraints across the network
 
-    params = {'apikey': api_key,'refine':f'der_name:{der_name}', 'limit': limit_per_call}
+    params = {'apikey': api_key,'refine':f'der_name:{der_name}'}
     resp = requests.get(api_base_url, params=params)
     data = resp.json()
     # Create DataFrame from data (handle potential errors)

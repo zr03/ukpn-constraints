@@ -195,7 +195,15 @@ def hit_api_and_return_data(api_base_url, api_key, der_name=None, n_records=500,
     limit_per_call (int, optional): The number of records to fetch per API call. Defaults to 100, the maximum allowable by ODP.
     Returns:
     pd.DataFrame: A concatenated DataFrame containing the fetched data.
+
+    Raises
+    ------
+    Exception
+        If the API key is not provided.
     """
+    if not api_key:
+        raise Exception("API key is required to fetch data from the API.")
+
     if not der_name:
         der_name = "REDACTED" # This will pull all constraints across the network
 

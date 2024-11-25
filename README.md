@@ -11,7 +11,7 @@ First, clone the repo using your git client.
 git clone https://github.com/zr03/ukpn-constraints.git
 ```
 
-1. Navigate to the datapipelines repo on the command line.
+1. Navigate to this repo on the command line.
 2. Create a virtual environment with a setup of python 3.10 and git.
 3. Install the package your new virtual environment with:
 
